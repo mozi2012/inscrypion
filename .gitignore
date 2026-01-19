@@ -3,5 +3,5 @@
 .lsp/
 .calva/
 node_modules/
-public/js/cljs-runtime/
+public/js/
 *~
