@@ -1,0 +1,17 @@
+{
+  "name": "inscrypion",
+  "version": "1.0.0",
+  "description": "A Shadow CLJS project",
+  "scripts": {
+    "dev": "shadow-cljs watch app",
+    "build": "shadow-cljs release app",
+    "repl": "shadow-cljs cljs-repl app"
+  },
+  "devDependencies": {
+    "shadow-cljs": "^2.28.23"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
