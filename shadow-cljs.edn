@@ -1,7 +1,7 @@
 {:source-paths ["src"]
 
  :dependencies [[reagent "1.2.0"]
-                [cider/cider-nrepl "0.57.0"]]
+                [cider/cider-nrepl "0.58.0"]]
 
  :npm-deps true
 
