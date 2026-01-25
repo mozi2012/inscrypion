@@ -1,0 +1,6 @@
+{:aliases
+ {:fmt {:extra-deps {dev.weavejester/cljfmt {:mvn/version "0.13.1"}}
+        :main-opts ["-m" "cljfmt.main" "fix" "src"]}
+
+  :fmt-check {:extra-deps {dev.weavejester/cljfmt {:mvn/version "0.13.1"}}
+              :main-opts ["-m" "cljfmt.main" "check" "src"]}}}
