@@ -3,4 +3,7 @@
         :main-opts ["-m" "cljfmt.main" "fix" "src"]}
 
   :fmt-check {:extra-deps {dev.weavejester/cljfmt {:mvn/version "0.13.1"}}
-              :main-opts ["-m" "cljfmt.main" "check" "src"]}}}
+              :main-opts ["-m" "cljfmt.main" "check" "src"]}
+
+  :cljs {:extra-deps {thheller/shadow-cljs {:mvn/version "2.28.23"}}
+         :main-opts ["-m" "shadow.cljs.devtools.cli" "watch" "app"]}}}
