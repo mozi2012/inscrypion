@@ -7,26 +7,49 @@
   <link rel="stylesheet" href="/css/card.css">
 </head>
 <body>
-  <!-- Game Board -->
-  <div class="board">
-    <!-- Yellow's Row (Top) -->
-    <div class="board-row">
-      <div class="board-slot"></div>
-      <div class="board-slot"></div>
-      <div class="board-slot"></div>
-      <div class="board-slot"></div>
+  <!-- Game Area -->
+  <div class="game-area">
+    <!-- Weighing Scale -->
+    <div class="scale">
+      <div class="scale-post"></div>
+      <div class="scale-beam">
+        <div class="scale-pan left">
+          <div class="pan-label">Yellow</div>
+          <div class="pan-bowl"></div>
+          <div class="pan-score">0</div>
+        </div>
+        <div class="scale-pivot"></div>
+        <div class="scale-pan right">
+          <div class="pan-label">Orange</div>
+          <div class="pan-bowl"></div>
+          <div class="pan-score">0</div>
+        </div>
+      </div>
+      <div class="scale-base"></div>
     </div>
-    <!-- Orange's Row (Bottom) -->
-    <div class="board-row">
-      <div class="board-slot"></div>
-      <div class="board-slot"></div>
-      <div class="board-slot"></div>
-      <div class="board-slot"></div>
-    </div>
-  </div>
 
-  <!-- Hand -->
-  <div class="card-container">
+    <!-- Board and Hand Column -->
+    <div class="board-column">
+      <!-- Game Board -->
+      <div class="board">
+        <!-- Yellow's Row (Top) -->
+        <div class="board-row">
+          <div class="board-slot"></div>
+          <div class="board-slot"></div>
+          <div class="board-slot"></div>
+          <div class="board-slot"></div>
+        </div>
+        <!-- Orange's Row (Bottom) -->
+        <div class="board-row">
+          <div class="board-slot"></div>
+          <div class="board-slot"></div>
+          <div class="board-slot"></div>
+          <div class="board-slot"></div>
+        </div>
+      </div>
+
+      <!-- Hand -->
+      <div class="card-container">
     <!-- Stoat Card -->
     <div class="card">
       <div class="card-border"></div>
@@ -87,6 +110,8 @@
       <div class="card-stats">
         <div class="stat damage">2</div>
         <div class="stat health">3</div>
+      </div>
+    </div>
       </div>
     </div>
   </div>

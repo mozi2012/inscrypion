@@ -174,6 +174,138 @@ body {
   color: #aaa;
 }
 
+/* Game Area */
+.game-area {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.board-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+/* Weighing Scale */
+.scale {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 180px;
+  height: 300px;
+}
+
+.scale-post {
+  width: 12px;
+  height: 180px;
+  background: linear-gradient(90deg, #5a4a3a 0%, #8b7355 50%, #5a4a3a 100%);
+  border: 2px solid #3a2a1a;
+  border-radius: 4px;
+  position: absolute;
+  bottom: 40px;
+  z-index: 1;
+}
+
+.scale-beam {
+  width: 160px;
+  height: 8px;
+  background: linear-gradient(180deg, #a08060 0%, #6a5040 100%);
+  border: 2px solid #3a2a1a;
+  border-radius: 4px;
+  position: absolute;
+  top: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transform: rotate(0deg);
+  transition: transform 0.5s ease;
+}
+
+.scale-pivot {
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, #c4a060 0%, #8b7355 100%);
+  border: 3px solid #5a4a3a;
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.scale-pan {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 8px;
+}
+
+.scale-pan.left {
+  left: -20px;
+}
+
+.scale-pan.right {
+  right: -20px;
+}
+
+.pan-label {
+  font-size: 10px;
+  font-weight: bold;
+  color: #8b7355;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+.pan-bowl {
+  width: 50px;
+  height: 25px;
+  background: linear-gradient(180deg, #6a5a4a 0%, #4a3a2a 100%);
+  border: 3px solid #3a2a1a;
+  border-radius: 0 0 50% 50%;
+  box-shadow:
+    inset 0 -5px 10px rgba(0,0,0,0.3),
+    0 3px 6px rgba(0,0,0,0.3);
+}
+
+.pan-score {
+  margin-top: 8px;
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+  border: 2px solid #4a4a4a;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #d4c4a8;
+}
+
+.scale-base {
+  width: 80px;
+  height: 20px;
+  background: linear-gradient(180deg, #5a4a3a 0%, #3a2a1a 100%);
+  border: 3px solid #2a1a0a;
+  border-radius: 4px;
+  position: absolute;
+  bottom: 20px;
+}
+
+/* Tilt states - add class via JS */
+.scale-beam.tilt-left {
+  transform: rotate(-15deg);
+}
+
+.scale-beam.tilt-right {
+  transform: rotate(15deg);
+}
+
 /* Board */
 .board {
   display: flex;
