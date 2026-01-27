@@ -1,0 +1,215 @@
+body {
+  background-color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 20px;
+  gap: 30px;
+  font-family: 'Courier New', monospace;
+}
+
+.card-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.card {
+  width: 200px;
+  height: 280px;
+  background: linear-gradient(135deg, #d4c4a8 0%, #c4b393 50%, #b8a67d 100%);
+  border: 4px solid #2a2a2a;
+  border-radius: 8px;
+  position: relative;
+  box-shadow:
+    0 0 0 2px #8b7355,
+    4px 4px 8px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none;
+}
+
+.card-border {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border: 2px solid #5a4a3a;
+  border-radius: 4px;
+}
+
+.card-image {
+  width: 140px;
+  height: 100px;
+  margin: 20px auto 10px;
+  background-color: #3a3a3a;
+  border: 2px solid #2a2a2a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 48px;
+}
+
+.card-name {
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #2a2a2a;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 10px 0;
+}
+
+.card-sigils {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.sigil {
+  width: 30px;
+  height: 30px;
+  background-color: #4a3a2a;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  color: #d4c4a8;
+}
+
+.card-stats {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  right: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.stat {
+  width: 40px;
+  height: 40px;
+  background-color: #2a2a2a;
+  border: 2px solid #5a4a3a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #d4c4a8;
+}
+
+.stat.damage {
+  color: #c44;
+}
+
+.stat.health {
+  color: #4a4;
+}
+
+.cost {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  gap: 4px;
+}
+
+.blood {
+  width: 16px;
+  height: 16px;
+  background-color: #8b0000;
+  border-radius: 50%;
+  border: 1px solid #2a2a2a;
+}
+
+.bone {
+  width: 16px;
+  height: 16px;
+  background-color: #f5f5dc;
+  border-radius: 2px;
+  border: 1px solid #2a2a2a;
+}
+
+/* Card variations */
+.card.rare {
+  background: linear-gradient(135deg, #e8d5a3 0%, #f0e6c8 50%, #d4b896 100%);
+  box-shadow:
+    0 0 0 2px #c4a35a,
+    0 0 20px rgba(255, 215, 0, 0.3),
+    4px 4px 8px rgba(0,0,0,0.5);
+}
+
+.card.death {
+  background: linear-gradient(135deg, #4a4a4a 0%, #3a3a3a 50%, #2a2a2a 100%);
+}
+
+.card.death .card-border {
+  border-color: #666;
+}
+
+.card.death .card-name {
+  color: #aaa;
+}
+
+/* Board */
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  background: linear-gradient(135deg, #3d2817 0%, #2a1a0f 100%);
+  border: 4px solid #1a1a1a;
+  border-radius: 12px;
+  box-shadow:
+    inset 0 0 20px rgba(0,0,0,0.5),
+    0 8px 20px rgba(0,0,0,0.6);
+}
+
+.board-row {
+  display: flex;
+  gap: 10px;
+}
+
+.board-slot {
+  width: 140px;
+  height: 200px;
+  background: linear-gradient(135deg, #4a3a2a 0%, #3a2a1a 100%);
+  border: 3px solid #5a4a3a;
+  border-radius: 8px;
+  box-shadow:
+    inset 0 0 15px rgba(0,0,0,0.4),
+    0 2px 4px rgba(0,0,0,0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.board-slot:hover {
+  background: linear-gradient(135deg, #5a4a3a 0%, #4a3a2a 100%);
+  border-color: #8b7355;
+  box-shadow:
+    inset 0 0 15px rgba(0,0,0,0.3),
+    0 0 10px rgba(139, 115, 85, 0.3);
+}
