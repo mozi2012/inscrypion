@@ -345,3 +345,92 @@ body {
     inset 0 0 15px rgba(0,0,0,0.3),
     0 0 10px rgba(139, 115, 85, 0.3);
 }
+
+/* Hand Area */
+.hand-area {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+/* Decks */
+.decks {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.deck {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.deck:hover {
+  transform: translateY(-5px);
+}
+
+.deck-cards {
+  width: 120px;
+  height: 170px;
+  border-radius: 8px;
+  position: relative;
+  box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
+}
+
+/* Stacked card effect */
+.deck-cards::before,
+.deck-cards::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  background: inherit;
+  border: inherit;
+}
+
+.deck-cards::before {
+  top: -4px;
+  left: 2px;
+  z-index: -1;
+}
+
+.deck-cards::after {
+  top: -8px;
+  left: 4px;
+  z-index: -2;
+}
+
+.squirrel-deck .deck-cards {
+  background: linear-gradient(135deg, #8b6914 0%, #6b4f10 100%);
+  border: 3px solid #4a3a1a;
+}
+
+.squirrel-deck .deck-cards::before,
+.squirrel-deck .deck-cards::after {
+  background: linear-gradient(135deg, #7b5912 0%, #5b3f0e 100%);
+  border: 3px solid #4a3a1a;
+}
+
+.main-deck .deck-cards {
+  background: linear-gradient(135deg, #4a3a2a 0%, #2a1a0a 100%);
+  border: 3px solid #5a4a3a;
+}
+
+.main-deck .deck-cards::before,
+.main-deck .deck-cards::after {
+  background: linear-gradient(135deg, #3a2a1a 0%, #1a0a00 100%);
+  border: 3px solid #5a4a3a;
+}
+
+.deck-label {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #8b7355;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
