@@ -14,5 +14,8 @@
  {:app {:target :browser
         :output-dir "public/js"
         :asset-path "/js"
+        :compiler-options {:optimizations :none
+                           :source-map true
+                           :source-map-path "public/js/out/cljs.map"}
         :modules {:main {:init-fn inscrypion.core/init}}
         :devtools {:after-load inscrypion.core/reload}}}}
