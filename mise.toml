@@ -1,3 +1,5 @@
 [tools]
 java = "latest"
 clojure = "latest"
+cljstyle = "0.17.642"
+zprint = "1.3.0"
