@@ -3,8 +3,8 @@
             [reagent.dom.client :as rdom-client]))
 
 (def cards
-  ;; :cost [blood_cost bone_cost]
-  {:squirrel {:name "squirrel"
+  {;; :cost [blood_cost bone_cost]
+   :squirrel {:name "squirrel"
               :damage 0
               :health 1
               :cost [0 0] ;; :cost [blood_cost bone_cost]
@@ -99,58 +99,44 @@
                               :key index}])
                   (:hand player-data))]))
 
+(comment
+
+  (if (and (= (:current-player @app-state) :yellow)
+           (not= (:card-clicked @app-state)
+                 nil))
+    (swap! app-state assoc-in [:board-piece-clicked] segment)
+
+    (swap! app-state (fn [app-state]
+                       (let [app-state
+                             ((swap! app-state assoc-in [:card-clicked] nil))]
+
+                         (swap! app-state assoc-in [:board-piece-clicked] nil))))))
+
+(defn create-board-segment [player]
+  (doall
+   (for [segment (range 4)]
+     [:button {:style {:background-image (str "url("
+                                              (if-let  [i (:image ((player (:board @app-state)) segment))]
+                                                i
+                                                (str "img/board_piece_" (name player) ".png")) ")")
+                       :width 123
+                       :height 195}
+               :on-click #(if (and (= (:current-player @app-state) player)
+                                   (not= (:card-clicked @app-state)
+                                         nil))
+                            (swap! app-state assoc :board-piece-clicked segment)
+                            (swap! app-state (fn [app-state]
+                                               (-> app-state
+                                                   (assoc :card-clicked nil)
+                                                   (assoc :board-piece-clicked nil)))))
+               :id segment
+               :key segment}])))
+
 (defn create-board []
   [:div
-   (doall
-    (for [segment (range 4)]
-      [:button {:style {:background-image (str "url("
-                                               (if-let  [i (:image ((:yellow (:board @app-state)) segment))]
-                                                 i
-                                                 "img/board_piece_yellow.png") ")")
-                        :width 123
-                        :height 195}
-                :on-click (fn []
-                            (if (and (= (:current-player @app-state) :yellow)
-                                     (not= (:card-clicked @app-state)
-                                           nil))
-                              (swap! app-state assoc-in [:board-piece-clicked] segment)
-
-                              (swap! app-state (fn [app-state]
-                                                 (let [app-state
-                                                       ((swap! app-state assoc-in [:card-clicked] nil))]
-
-                                                   (swap! app-state assoc-in [:board-piece-clicked] nil)))))
-                            (prn "board-piece-clicked:" (:board-piece-clicked @app-state)))
-                :id segment
-                :key segment}]))
-
+   (create-board-segment :yellow)
    [:br]
-   (doall
-    (for [segment (range 4)]
-      ^{:key segment}
-      [:button {:style {:background-image (str "url("
-                                               ;;if orange board 
-                                               (if-let  [i (:image ((:orange (:board @app-state)) segment))]
-                                                 i
-                                                 "img/board_piece_orange.png") ")")
-                        :width 123
-                        :height 195}
-                :on-click (fn []
-                            (if  (and (= (:current-player @app-state) :orange)
-                                      (not= (:card-clicked @app-state)
-                                            nil))
-                              (swap! app-state assoc-in [:board-piece-clicked] (+ segment 4))
-
-                              (swap! app-state (fn [app-state]
-                                                 (let [app-state
-                                                       ((swap! app-state assoc-in [:card-clicked] nil))]
-
-                                                   (swap! app-state assoc-in [:board-piece-clicked] nil))))
-                              #_(do
-                                  (swap! app-state assoc-in [:card-clicked] nil)
-                                  (swap! app-state assoc-in [:board-piece-clicked] nil)))
-                            (prn "board-piece-clicked:" (:board-piece-clicked @app-state)))
-                :id (str "segment " (+ segment 4))}]))
+   (create-board-segment :orange)
    [:br]])
 
 (defn play-card []
