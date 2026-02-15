@@ -38,26 +38,8 @@
           :else (println "Nothing to clean."))))
 
 
-(defn- run-cljstyle
-  []
-  (let [{:keys [exit out err]} (sh/sh "mise" "exec" "--" "cljstyle" "fix")]
-    (if (not= 0 exit)
-      (do (binding [*out* *err*]
-            (println "cljstyle error:")
-            (println err)
-            (println out))
-          exit)
-      (do (when (seq (str/trim out))
-            (print out)
-            (flush))
-          0))))
 
 
-(defn cljstyle-fix
-  [_]
-  (System/exit (run-cljstyle)))
 
 
-(defn format-codebase
-  [_]
-  (System/exit (run-cljstyle)))
+

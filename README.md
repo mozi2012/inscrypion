@@ -36,13 +36,6 @@ This project runs `shadow-cljs` via `deps.edn` so tooling can be driven from the
 
 ## `deps.edn` Aliases
 
-### `:fmt`
-
-Formats the codebase using the dev task runner (`cljstyle`).
-
-```bash
-clj -X:fmt
-```
 
 ### `:clean`
 
@@ -69,7 +62,6 @@ clj -M:cljs watch app
 clj -M:cljs compile app
 clj -M:cljs release app
 ```
-
 ### Notes
 
 - `deps.edn` is the entry point for dependencies and launching `shadow-cljs`.
