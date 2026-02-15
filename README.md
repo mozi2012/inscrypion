@@ -38,7 +38,7 @@ This project runs `shadow-cljs` via `deps.edn` so tooling can be driven from the
 
 ### `:fmt`
 
-Formats the codebase using the dev task runner (`cljstyle` + `zprint`).
+Formats the codebase using the dev task runner (`cljstyle`).
 
 ```bash
 clj -X:fmt
