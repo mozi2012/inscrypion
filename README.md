@@ -22,6 +22,14 @@ clj -M:cljs watch app
 4. Open the game in your browser:
 - `http://localhost:8020/`
 
+5. In the CLJS REPL, run:
+
+```clojure
+(js/alert :hello)
+```
+
+You should see an alert in the browser.
+
 ## ClojureScript Workflow (`deps.edn`)
 
 This project runs `shadow-cljs` via `deps.edn` so tooling can be driven from the Clojure CLI.
@@ -60,27 +68,6 @@ Runs `shadow-cljs` via the Clojure CLI.
 clj -M:cljs watch app
 clj -M:cljs compile app
 clj -M:cljs release app
-```
-
-## Emacs + CIDER REPL
-
-Use this flow to connect both Clojure and ClojureScript REPLs from Emacs:
-
-1. Start Shadow CLJS in a terminal:
-
-```bash
-clj -M:cljs watch app
-```
-
-2. In Emacs, connect CIDER to the Clojure nREPL:
-- `M-x cider-connect`
-- Host defaults to `localhost`
-- Port is auto-read from `.shadow-cljs/nrepl.port`
-
-3. In the connected Clojure REPL, start the CLJS REPL for the app build:
-
-```clojure
-(shadow/repl :app)
 ```
 
 ### Notes
