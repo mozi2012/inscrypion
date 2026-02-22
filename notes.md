@@ -9,7 +9,7 @@
 
 ## Project Details
 
--   **Core File**: `/home/cto/workspace/inscrypion/srnscrypion/core.cljs`
+-   **Core File**: `/home/cto/workspace/inscrypion/src/inscrypion/core.cljs`
 -   **Card Data Structure**: 
     ```clojure
     [{:name "test0" 
@@ -62,7 +62,7 @@
 
 ## Clojure & CIDER
 
--   **Start REPL (Claude)**: `M-x vterm` (then run `clj -M:cljs watch app`)
+-   **Start REPL**: `M-x shell` (then run `clj -M:cljs watch app`)
 -   **Connect CIDER REPL**: `M-x cider-connect`
 -   **Select ClojureScript REPL**: `(shadow/repl :app)`
 
@@ -72,7 +72,7 @@
 -   **Push**: `P p` (in Magit buffer)
 
 ## Terminal (vterm)
-
+-   **start AI agents in vterm **
 -   **Switch between buffer and terminal**: `C-c C-t`
 
 ## Code Folding (hs-minor-mode)
