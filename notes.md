@@ -1,68 +1,86 @@
- 
-CONNECT TO SERVER: ssh wabbit.bumble.fish
+# Project: Inscrypion
 
-ACCESS TMUX: tmux a
+## Server & Development Workflow
 
-run(in shell): npx shadow-cljs watch app 
-open: http://wabbit.bumble.fish:8020/
+1.  **Connect to Server**: `ssh wabbit.bumble.fish`
+2.  **Access TMUX**: `tmux a`
+3.  **Start Watch Process**: `clj -M:cljs watch app`
+4.  **Open in Browser**: `http://wabbit.bumble.fish:8020/`
 
-open shell:              M-x shell
-open file:               C-x p f
- 
-start claude:            M-x vterm 
-change:
-start REPL:              M-x cider-connect 
-start clojure script repl:   (shadow/repl :app)
+## Project Details
 
-show line number:        M-x display-line-numbers-mode
+-   **Core File**: `/home/cto/workspace/inscrypion/srnscrypion/core.cljs`
+-   **Card Data Structure**: 
+    ```clojure
+    [{:name "test0" 
+      :health 1 
+      :damage 0
+      :sigils 0}]
+    ```
+-   **Board Data Structure**:
+    ```clojure
+    [
+     [{:name "test0" 
+       :health 1 
+       :damage 0
+       :sigils 0}]
 
-mark: C-space
-copy: M-w
+     [{:name "test1" 
+       :health 1 
+       :damage 0
+       :sigils 0}]
+    ]
+    ```
+-   **Ideas**: 
+    - (empty)
 
+---
 
+# Emacs Configuration & Commands
 
+## General
 
-rename buffer:           M-x rename-buffer 
-split buffer:            C-x 3
-reload buffer:           C-x C-v
-list all buffers: C-x C-b
+-   **Open Shell**: `M-x shell`
+-   **Find File**: `C-x p f`
+-   **Show Line Numbers**: `M-x display-line-numbers-mode`
+-   **Spell Check (on-the-fly)**: `M-x flyspell-mode`
+-   **Recover from `C-z`**: Type `fg` in the terminal and press Enter.
 
-if C-z: input fg
+## Text Editing
 
-core.cljs: /home/cto/workspace/inscrypion/srnscrypion/core.cljs
+-   **Mark**: `C-space`
+-   **Copy (Yank)**: `M-w`
+-   **Evaluate S-expression**: `C-x C-e`
+-   **Delete Parentheses (forward)**: `C-d`
 
+## Buffer Management
 
-activate hs-minor-mode:  M-x hs-minor-mode
-C-c @ C-a	hs-show-all
-C-c @ C-c	hs-toggle-hiding
-C-c @ C-d	hs-hide-block
-C-c @ C-e	hs-toggle-hiding
-C-c @ C-h	hs-hide-block
-C-c @ C-l	hs-hide-level
-C-c @ C-s	hs-show-block
-C-c @ C-t	hs-hide-all
+-   **List Buffers**: `C-x C-b`
+-   **Split Buffer Vertically**: `C-x 3`
+-   **Rename Buffer**: `M-x rename-buffer`
+-   **Reload Buffer from File**: `C-x C-v`
 
-C-c @ C-M-h	hs-hide-all
-C-c @ C-M-s	hs-show-all
+## Clojure & CIDER
 
+-   **Start REPL (Claude)**: `M-x vterm` (then run `clj -M:cljs watch app`)
+-   **Connect CIDER REPL**: `M-x cider-connect`
+-   **Select ClojureScript REPL**: `(shadow/repl :app)`
 
-notes:
+## Git (Magit)
 
-card data structure: [{:name "test0" 
-                       :health 1 
-                       :damage 0
-                       :sigils 0}]
+-   **Enter Magit Status**: `C-x g`
+-   **Push**: `P p` (in Magit buffer)
 
-board data structure: [
-                       [{:name "test0" 
-                         :health 1 
-                         :damage 0
-                         :sigils 0}]
+## Terminal (vterm)
 
-                       [{:name "test1" 
-                         :health 1 
-                         :damage 0
-                         :sigils 0}]
-                        ] 
+-   **Switch between buffer and terminal**: `C-c C-t`
 
-idea: 
+## Code Folding (hs-minor-mode)
+
+-   **Activate Mode**: `M-x hs-minor-mode`
+-   **Show All**: `C-c @ C-a` or `C-c @ C-M-s`
+-   **Hide All**: `C-c @ C-t` or `C-c @ C-M-h`
+-   **Toggle Hiding**: `C-c @ C-c` or `C-c @ C-e`
+-   **Hide Block**: `C-c @ C-d` or `C-c @ C-h`
+-   **Show Block**: `C-c @ C-s`
+-   **Hide by Level**: `C-c @ C-l`
