@@ -1,12 +1,19 @@
 (ns inscrypion.core
   (:require
-    [clojure.string :as string]
-    [reagent.core :as r]
-    [reagent.dom.client :as rdom-client]))
+   [clojure.string :as string]
+   [reagent.core :as r]
+   [reagent.dom.client :as rdom-client]))
 
+(comment
+  {:name "",
+   :damage 0,
+   :health 1,
+   :cost {:blood 0, :bones 0},
+   :sigils nil,
+   :image "/img/ "})
 
 (def cards
-  {;; :cost [blood_cost bone_cost]
+  { ;; :cost [blood_cost bone_cost]
    :squirrel {:name "squirrel",
               :damage 0,
               :health 1,
@@ -19,7 +26,21 @@
            :health 3,
            :cost {:blood 1, :bones 0},
            :sigils [:sniper],
-           :image "/img/stoat_card.png"}})
+           :image "/img/stoat_card.png"}
+   
+   :wolf {:name "wolf",
+          :damage 3,
+          :health 2,
+          :cost {:blood 2, :bones 0},
+          :sigils nil,
+          :image "/img/nil"}
+
+   :coyote {:name "coyote",
+            :damage 2,
+            :health 1,
+            :cost {:blood 0, :bones 4},
+            :sigils nil,
+            :image "/img/nil "}})
 
 
 ;; Define app state
@@ -31,6 +52,7 @@
      :board-piece-clicked nil,
      :card-clicked nil,
 
+     :must-play-card false
      :sacrificed-cards [],
      :sacrifices-required nil,
 
@@ -45,14 +67,15 @@
               :deck [],                 ; [:stoat :squirrel]
               :bones 0},
 
-     :orange {:hand [:squirrel :stoat :stoat :wolf],
+     :orange {:hand [{:card-key :coyote
+                      :sigils :red} #_[:coyote :sniper] :squirrel :stoat :stoat :wolf],
               :deck [:stoat :squirrel :wolf],
-              :bones 0},
+              :bones 4},
 
      :board {:yellow [{:name "squirrel",
                        :damage 0,
                        :health 1,
-                       :cost [0 0],
+                       :cost {:blood 0 :bones 0},
                        :sigils [nil],
                        :image "/img/squirrel.png"}
                       nil
@@ -62,7 +85,7 @@
                        :damage 1,
                        :health 3,
                        :cost [0 0],
-                       :sigils [:sniper],
+                       :sigils [:sniper], ;;worthy-sacrifice
                        :image "/img/stoat_card.png"}
                       nil
                       nil
@@ -78,18 +101,25 @@
 (def text-dump
   {:card-already-drawn
    ["You can draw a new card once per turn. You have already drawn one..."
-    "Do you understand? Only one." "You have drawn a card this turn."
+    "Do you understand? Only one."
+    "You have drawn a card this turn."
     "One card per turn. Don't be greedy."],
 
-   :deck-empty ["You are out of cards..." "Nothing left to draw."
-                "Your deck is empty." "You can only draw a squirrel."
+   :deck-empty ["You are out of cards..."
+                "Nothing left to draw."
+                "Your deck is empty."
+                "You can only draw a squirrel."
                 "Trying to draw cards from thin air?"],
 
    :lack-blood-squirrel-in-hand
    "You are lacking the sacrifices to play that [CARD], but your squirrel is free.",
 
    :lack-blood-no-squirrel
-   "You lack the sacrifices required to play the [CARD]"})
+   "You lack the sacrifices required to play that [CARD]"
+
+   :lack-bones
+   "You lack the bones to play that [CARD]"
+   })
 
 
 
@@ -139,8 +169,8 @@
     {:sigils [:worthy-sacrifice]}
     nil]))
 
-(defn calculate-sacrificial-cards [cards]
-  (prn "2 START: calculate-sacrificial-cards")
+(defn calculate-sacrificial-cards [cards nested-order]
+  (prn (str nested-order " START: calculate-sacrificial-cards"))
   (prn "PARAMETER cards:" cards)
   (let [nil-filtered (filter (fn [x]
                                (not (nil? x)))
@@ -161,7 +191,7 @@
                           1 
                           ))]
     (prn "SYMBOL blood-list:" blood)
-    (return blood "calculate-sacrificial-cards" 2)
+    (return blood "calculate-sacrificial-cards" nested-order)
 
     ))
 
@@ -179,36 +209,48 @@
 
 (defn- on-click-hand
   [current-player index card-info]
+  (prn "::NOTICE:: card hand ")                        ;;BIG PROBLEM CANNOT ADD SIGILS TO INDUVIAL CARDS IN DECK NOR HAND
   (prn "1 START: on-click-hand")
-  (let [blood-cost (get-in card-info [:cost :blood])
+  (let [bone-cost (get-in card-info [:cost :bone])
+        card-name (:name card-info)
+        bones-in-hand (-> @app-state
+                          current-player
+                          :bones)
+        blood-cost (get-in card-info [:cost :blood])
         blood-on-board (reduce + (calculate-sacrificial-cards (-> @app-state
                                                                   :board
-                                                                  current-player)))]
+                                                                  current-player)
+                                                              2))]
 
     (prn "SYMBOL blood-on-board: " blood-on-board)
     (prn "SYMBOL blood-cost:" blood-cost)
     (prn "BOOLEAN <= blood-cost blood-on-board:" (<= blood-cost blood-on-board))
     (prn "SYMBOL card-clicked : " (@app-state :card-clicked))
-    (if (<= blood-cost blood-on-board)
 
-      (do
-        (prn "EVENT: card-clicked changed to:" index )
-        (prn "EVENT: sacrifices-required changed changed to:" blood-cost)
-        (swap! app-state (fn [state]
-                           (-> state
-                               (assoc :card-clicked index)
-                               (assoc :sacrifices-required blood-cost)))))
+    
+    (if (<= bone-cost bones-in-hand)
+      (if (<= blood-cost blood-on-board)
 
-      (let [number-of-squirrels (check-squirrels current-player)
-            card-name (:name card-info)
-            msg-template (if (>= (+ number-of-squirrels blood-on-board)
-                                 blood-cost)
-                           (text-dump :lack-blood-squirrel-in-hand)
-                           (text-dump :lack-blood-no-squirrel))]
-        (prn "EVENT: dynamic-text changed to: ~" msg-template)
-        (swap! app-state assoc
-               :dynamic-text
-               (replace-CARD msg-template card-name)))))
+        (do
+          (prn "EVENT: card-clicked succeed; :card-clicked changed to:" index )
+          (prn "                           ; :sacrifices-required changed changed to:" blood-cost)
+          (swap! app-state (fn [state]
+                             (-> state
+                                 (assoc :card-clicked index)
+                                 (assoc :sacrifices-required blood-cost)))))
+
+        (let [number-of-squirrels (check-squirrels current-player)
+              msg-template (if (>= (+ number-of-squirrels blood-on-board)
+                                   blood-cost)
+                             (text-dump :lack-blood-squirrel-in-hand)
+                             (text-dump :lack-blood-no-squirrel))]
+          (prn "EVENT: card-clicked failed; :dynamic-text changed to: ~" msg-template)
+          (swap! app-state assoc
+                 :dynamic-text
+                 (replace-CARD msg-template card-name))))
+
+
+      (swap! app-state assoc :dynamic-text (replace-CARD (text-dump :lack-bones) card-name))))
   (prn "SYMBOL sacrifices-required : " (@app-state :sacrifices-required))
 
   (prn "1 END: on-click-hand")
@@ -235,12 +277,17 @@
 
 (defn play-card
   [hand card-index board-piece-index current-player]
-  (prn "2 START: play-card ")
+  (prn "2 START: play-card")
+  (prn "PARAMETER; hand:" hand)
+  (prn "         ; card-index:" card-index)
+  (prn "         ; board-piece-index:" board-piece-index)
+  (prn "         ; current-player:"current-player)
   (let [card-key (hand card-index)
         card-info (cards card-key)]
-    (prn "EVENT: card-clicked:" nil)
-    (prn "EVENT: board-piece-clicked:" nil)
-    (prn "EVENT: card-info:" card-info "moved to board index:" board-piece-index) 
+    (prn "EVENT: play-card succeeded; card-clicked:" nil)
+    (prn "                          ; board-piece-clicked:" nil)
+    (prn "                          ; card-info:" card-info "moved to board index:" board-piece-index) 
+    (prn "::SYMBOL:: card-info:" card-info)
     (swap! app-state
            (fn [app-state]
              (-> app-state
@@ -248,16 +295,18 @@
                  (assoc :card-clicked nil)
                  (assoc :board-piece-clicked nil)
                  (assoc :sacrifices-required nil)
-                 
+                 (assoc :sacrificed-cards [])
                  (update-in [current-player :hand]
                             (fn [h]
                               (vec (keep-indexed (fn [idx card]
                                                    (when (not= idx card-index) card))
-                                                 h)))))))))
+                                                 h))))))))
+  (prn "SYMBOL :sacrifices-required :" (@app-state :sacrifices-required))
+  (prn "2 END: play-card"))
 
 
 
-(defn can-pay-cost?
+(defn can-pay-cost? ;;PROBLEM WITH can-pay-cost 
   [card-index hand board-piece-index current-player]
   (prn "2 START: can-pay-cost?")
   (prn "SYMBOL hand:" hand)
@@ -268,7 +317,7 @@
         card-cost (card-info :cost)]
 
     (prn "SYMBOL sacrifices-required:" (@app-state :sacrifices-required))
-    
+    (prn "SYMBOL ")
     
     (return
      (if (and 
@@ -283,40 +332,7 @@
        false)
      "can-pay-cost" 2) ))
 
-(comment
-  ;;if board-segment-clicked:  ✓  
-  ;;   if card-clicked\(hand): ✓ 
-  ;;      if can-pay-cost and card-not-on-space:     ✓  
-  ;;         remove-sacrificed-cards X
-  ;;         play-card X                      
-  ;;
-  ;;      else:
-  ;;           if card-on-space\(board):  ?X
-  ;;              if board-piece-index in :sacrificed-cards : X  <<---
-  ;;                 remove-board-piece-index-from-:sacrificyed-cards      X
-  ;;
-  ;;              else:                                       X       
-  ;;                  add-index-to-:sacrificed-cards          ✓
-  ;;
-  ;;              check-blood-sigils                          ?✓
-  ;;              subtract-blood-from-:sacrifices-required    X
-  ;;                   
-  ;;
-  (shadow/repl :app)
 
-  (not (nil? nil))
-  
-  (-> @app-state  
-      :board
-      current-player
-      ((fn [current-board]
-         (current-board board-piece-index)))
-      nil?
-      not)
-
-
-
-)
 
 (defn space-empty? [board-piece-index current-player]
   (prn "2 START: space-empty?")
@@ -331,71 +347,83 @@
        )
    "space-empty?" 2))
 
+
+
+
+
+
+
+(defn update-sacrifices-required [sacrificed-card-index board-current-players-side]
+  (prn "2 START: update-sacrifices-required")
+  (let [blood-drawn (reduce + (calculate-sacrificial-cards [(board-current-players-side sacrificed-card-index)] 3))
+        new-sacrifices-required (- (@app-state :sacrifices-required) blood-drawn)]
+    (swap! app-state assoc :sacrifices-required new-sacrifices-required)
+    (prn "SYMBOL blood-drawn:" blood-drawn)
+    (prn "SYMBOL new-sacrifices-required:" new-sacrifices-required)
+    (prn "EVENT: :sacrifices-required changed to: " new-sacrifices-required)) 
+  (prn "2 END: update-sacrifices-required")
+  )
+
 (comment
+  (swap! app-state assoc :sacrifices-required 5)
+  
+  [{:sigils [:no-effect :bloodless]}
+   {:sigils [:no-effect]}        ;;1
+   {:sigils nil}                 ;;2
+   {:sigils [:worthy-sacrifice]} ;;3
+   nil]
 
-  
-  
-  ;;first 
-  
-  (def sacrificed-cards [1 3 2])
-
-  (def board
-    [{:sigils [:no-effect :bloodless]}
-     {:sigils [:no-effect]} ;;1
-     {:sigils nil} ;;2
-     {:sigils [:worthy-sacrifice]} ;;3
-     nil])
-  ;;C-x C-e
-
-  
-  (keep-indexed (fn [idx card]
-                  (when (some #{idx} sacrificed-cards)
-                    card))
-                board)
-  (some #{1} [1 3 2])
-
-  (if []
-    1
-    0)
-  
-  (def foo1
-    (calculate-sacrificial-cards board))
-
-  
+  (update-sacrifices-required 1 [{:sigils [:no-effect :bloodless]}
+                                 {:sigils [:no-effect]} ;;1
+                                 {:sigils nil} ;;2
+                                 {:sigils [:worthy-sacrifice]} ;;3
+                                 nil])
   )
 
 
-#_(defn update-sacrifices-required [sacrificed-cards current-player]
-  (prn "2 START: update-sacrifices-required")
-  (-> @app-state :board current-player (fn [p]
-                                         (p sacrificed-cards))))
+
+
 
 (defn board-segment-on-click
   [card-index board-piece-index current-player]
   (prn "1 START: board-segment-on-click")
   (let [hand (-> @app-state current-player :hand)
-        sacrificed-cards (@app-state :sacrificed-cards)
-        pay-cost? (can-pay-cost? card-index hand board-piece-index current-player)
-        can-play-card? (and pay-cost?
-                            (space-empty? board-piece-index current-player))
-        can-sacrifice-card? (and (-> @app-state  
-                                     :board
-                                     current-player
-                                     ((fn [current-board]
-                                        (current-board board-piece-index)))
-                                     nil?
-                                     not)
+        board-players-side (-> @app-state
+                               :board
+                               current-player)
+        - (prn "SYMBOL board-players-side:" board-players-side)
+        - (prn "SYMNOL board-piece-index:" board-piece-index)
+        board-piece-info (board-players-side board-piece-index)
+        _ (prn "SYMBOL board-piece-info:" board-piece-info)
 
-                                 (= (count
-                                     (filter (fn [item]
-                                               (= item board-piece-index))
-                                             sacrificed-cards))
-                                    1))]    
+        sacrificed-cards (@app-state :sacrificed-cards)
+
+        pay-cost? (can-pay-cost? card-index hand board-piece-index current-player)
+
+        can-play-card? (and
+                        pay-cost?
+                        (space-empty? board-piece-index current-player))
+
+        can-sacrifice-card? (and
+                             (and (-> board-piece-info
+                                      nil?
+                                      not)
+                                  
+                                  (= (count
+                                      (filter (fn [item]
+                                                (= item board-piece-index))
+                                              sacrificed-cards))
+                                     1))
+                             
+                             (not (bloodless? (board-piece-info :sigils)) ) )]    
     (prn "SYMBOL board-piece-index:" board-piece-index)
+
+    
     
     (cond
       can-play-card?
-      (play-card hand card-index board-piece-index current-player)
+      (do
+        (play-card hand card-index board-piece-index current-player))
 
       pay-cost? (do
                   (prn "EVENT: card-clicked, board-piece-clicked, and sacrifices-required changed to:" nil)
@@ -415,49 +443,150 @@
                                                            sacrificed-cards)))
       :else (do
               (prn "EVENT: index:" board-piece-index " added to sacrificed-cards")
-              ;;NEED TO MAKE FUNCTION THAT CALCULATES THE BLOOD OF EACH CARD IN :sacrificed-cards AND UPDATES :sacrifices-required ACCORDINGLY
-              (swap! app-state update :sacrificed-cards conj board-piece-index)) 
+              (swap! app-state update :sacrificed-cards conj board-piece-index)
+              (update-sacrifices-required board-piece-index board-players-side)) 
+      
+      )
+    (prn "SYMBOL :sacrifices-required :" (@app-state :sacrifices-required))
+    (prn "BOOLEAN " (<= (@app-state :sacrifices-required) 0))
+    
+    
+    (when (and
+           (not (nil? (@app-state :sacrifices-required)))
+           (<= (@app-state :sacrifices-required) 0))
+      (do
+        (prn "EVENT:  ")
+        (swap! app-state update-in [:board :orange]
+               #(vec (map-indexed (fn [index item]
+                                    (if (some (set [index]) (@app-state :sacrificed-cards))
+                                      nil
+                                      item
+                                      ))
+                                  %1))))
       )
     
     )
   (prn "1 END: board-segment-on-click")
   (prn " "))
 
+(comment
+
+  (prn (->
+        app-state
+        :board
+        :orange))
+  (swap! app-state update-in [:board :orange]
+         #(map-indexed (fn [index item]
+                         (if (some (set [index]) (@app-state :sacrificed-cards))
+                           nil
+                           item
+                           ))
+                       %1))
+
+  (map-indexed (fn [index item]
+                 (prn "item: " item)
+                 (prn "index:" index)
+                 (if (some (set [index]) (@app-state :sacrificed-cards))
+                   nil
+                   item
+                   ))
+               )
+
+  )
 #_(fn [app-state]
-                     (-> app-state
-                         (update :sacrificed-cards
-                                 conj
-                                 board-piece-index)))
+    (-> app-state
+        (update :sacrificed-cards
+                conj
+                board-piece-index)))
+
+(comment
+      (def foo1 [1 3 2])
+
+      (def foo2 [{:name "card0"}
+                 {:name "card1"}
+                 {:name "card2"}
+                 {:name "card4"}
+                 {:name "card5"}])
+
+      (not (empty?
+            (filter (fn [v]
+                      (= 1 v))
+                    foo1)))
+
+      (filter (fn [v]
+                (= index v))
+              foo1)
+
+      (def fooB3
+        (keep-indexed (fn [index item]
+                        #_(if (empty?
+                             (filter (fn [v]
+                                       (= index v))
+                                     foo1))
+                          item
+                          nil))
+                      foo2))
+      
+      (def foo4
+        )
+
+      
+      (def foo3
+        (map-indexed (fn [index item]  
+                       (if (empty?
+                            (filter (fn [v]
+                                      (= 1 v))
+                                    foo2))
+                         nil
+                         item)
+                       )
+                     foo1))
+      
+      (filter (fn [v]
+                (not )))
+      (some #(when ))
+      (some (fn [v]
+              ))
+      (keep-indexed ))
 
 (comment
   (filter (fn [item]
-            (not= [1 2 3 4])) 3))
+            (not= [1 2 3 4])) 3)
+  )
 
 (defn create-board-segment
   [player]
+  
   (doall
    (for [segment (range 4)]
      [:button
-      {:style {:background-image
-               (str "url("
-                    (if-let [i (:image ((player (:board @app-state))
-                                        segment))]
-                      i
-                      (str "img/board_piece_" (name player) ".png"))
-                    ")"),
+      {:style {:background-image (str "url("
+                                      (if-let [i (:image ((player (:board @app-state))
+                                                          segment))]
+                                        i
+                                        (str "img/board_piece_" (name player) ".png"))
+                                      ")"),
                :width 123,
                :height 195},
        :on-click #(let [card-clicked (:card-clicked @app-state)]
-                    (if (and (= (:current-player @app-state) player) 
-                             (not= card-clicked
-                                   nil))  
+                    (do
+                      (prn "::NOTICE:: board-segment state: " (-> @app-state
+                                                                  :board
+                                                                  player
+                                                                  ((fn [v]
+                                                                     (v segment)))
+                                                                  ))
+                      (if (and (= (:current-player @app-state) player) 
+                               (not= card-clicked
+                                     nil))  
 
-                      (board-segment-on-click card-clicked segment player)
-                      
-                      (swap! app-state (fn [app-state]
-                                         (-> app-state
-                                             (assoc :card-clicked nil)
-                                             (assoc :board-piece-clicked nil)))))),
+                        ;;PROBLEM IN BOARD-SEGMENT-ON-CLICK
+                        (board-segment-on-click card-clicked segment player)
+                        
+                        (swap! app-state (fn [app-state]
+                                           (-> app-state
+                                               (assoc :card-clicked nil)
+                                               (assoc :board-piece-clicked nil))))))),
        :key segment}])))
 
 
@@ -506,19 +635,22 @@
   [:div [:br] [create-board] [:br] [:h1 "hand:"] (create-hand) [:br]
    [:h1 (:dynamic-text @app-state)] ; (prn "test")
    [:br]
-   [:button
-    {:style
-     {:background-image "url(/img/squirrel.png)", :width 123, :height 195},
-     :on-click (fn [] (draw-card :squirrel))}]
-   [:button
-    {:style {:background-image nil, :width 123, :height 195},
-     :on-click (fn []
-                 (let [current-player (:current-player @app-state)
-                       deck (:deck (current-player @app-state))]
-                   (draw-card (first deck))
-                   (swap! app-state update-in
-                          [current-player :deck]
-                          (fn [a] (vec (rest a))))))}]])
+   [:div
+
+    [:button
+     {:style
+      {:background-image "url(/img/squirrel.png)", :width 123, :height 195},
+      :on-click (fn [] (draw-card :squirrel))}]
+
+    [:button
+     {:style {:background-image nil, :width 123, :height 195},
+      :on-click (fn []
+                  (let [current-player (:current-player @app-state)
+                        deck (:deck (current-player @app-state))]
+                    (draw-card (first deck))
+                    (swap! app-state update-in
+                           [current-player :deck]
+                           (fn [a] (vec (rest a))))))}]]])
 
 
 ;; root in an atom
