@@ -84,3 +84,5 @@
 -   **Hide Block**: `C-c @ C-d` or `C-c @ C-h`
 -   **Show Block**: `C-c @ C-s`
 -   **Hide by Level**: `C-c @ C-l`
+
+## Things 
